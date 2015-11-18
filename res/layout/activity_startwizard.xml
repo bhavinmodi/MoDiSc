@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <include
+       android:id="@+id/TLToolBar"
+       layout="@layout/toolbar"/>
+    
+     <View
+          android:id="@+id/SWShadow"
+	      android:layout_width="match_parent"
+	      android:layout_height="5dp"
+	      android:background="@drawable/toolbar_shadow"
+	      android:layout_below="@+id/TLToolBar" />
+     
+    <TextView 
+        android:id="@+id/SWTVName"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_below="@+id/SWShadow"
+        android:text="@string/name"
+        android:textColor="@color/black"
+        android:textSize="22sp" />
+    
+    <EditText 
+        android:id="@+id/SWETName" 
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:hint="@string/enter_name"
+        android:layout_below="@+id/SWTVName"
+        android:maxLines="1"
+        android:inputType="textPersonName"
+        android:textSize="22sp"
+        android:background="@android:drawable/editbox_background_normal" />
+    
+    <TextView 
+        android:id="@+id/SWTVGroup" 
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="@string/group"
+        android:layout_below="@+id/SWETName"
+        android:textColor="@color/black"
+        android:textSize="22sp" />
+    
+    <EditText 
+        android:id="@+id/SWETGroup" 
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:hint="@string/enter_group"
+        android:layout_below="@+id/SWTVGroup"
+        android:textSize="22sp"
+        android:maxLines="1"
+        android:inputType="number"
+        android:background="@android:drawable/editbox_background_normal" />
+    
+    <TextView 
+        android:id="@+id/SWTVEmail" 
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="@string/email"
+        android:layout_below="@+id/SWETGroup"
+        android:textColor="@color/black"
+        android:textSize="22sp" />
+    
+    <EditText 
+        android:id="@+id/SWETEmail" 
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:inputType="textEmailAddress"
+        android:hint="@string/enter_email"
+        android:layout_below="@+id/SWTVEmail"
+        android:textSize="22sp"
+        android:background="@android:drawable/editbox_background_normal" />  
+    
+     <ImageView
+        android:id="@+id/SWIVBgImage"
+        android:contentDescription="@string/splash_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/SWETEmail"
+        android:layout_above="@+id/SWBSubmit"
+        android:layout_centerHorizontal="true"
+        android:padding="5dp"
+        android:cropToPadding="true"
+        android:scaleType="fitCenter"
+        android:src="@drawable/scrum_icon" />
+     
+    <Button 
+        android:id="@+id/SWBSubmit" 
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:text="@string/submit"
+        android:textSize="20sp"
+        android:background="@drawable/button_click"
+        style="?android:attr/buttonBarButtonStyle" />
+    
+</RelativeLayout>
