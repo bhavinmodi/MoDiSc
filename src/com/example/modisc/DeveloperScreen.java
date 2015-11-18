@@ -67,27 +67,13 @@ public class DeveloperScreen extends AppCompatActivity{
 		 
         switch(item.getItemId()){
            case R.id.configure_menu:
-        	    /*String msg = "Are you sure you want to change your Company and Driver ID?";
-	   			final AlertDialog.Builder dialog = new AlertDialog.Builder(DeveloperScreen.this).setTitle("Maven Machines").setMessage(msg);
-	   			dialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-	   		           public void onClick(DialogInterface dialog, int id) {
-	   		        	   try {
-	   							Class<?> ourClass = Class.forName(helper.getClassSettings());
-	   							Intent ourIntent = new Intent(DeveloperScreen.this, ourClass);
-	   		    				startActivity(ourIntent);
-	   						} catch (ClassNotFoundException e) {
-	   							e.printStackTrace();
-	   						}
-	   		           }
-	   		       });
-	   			dialog.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-	   		           public void onClick(DialogInterface dialog, int id) {
-	   		        	   //Do Nothing
-	   		           }
-	   		       });
-	   			final AlertDialog alert = dialog.create();
-	            alert.show();*/
-        	    
+        	   try {
+					Class<?> ourClass = Class.forName("com.example.modisc.StartWizard");
+					Intent ourIntent = new Intent(DeveloperScreen.this, ourClass);
+    				startActivity(ourIntent);
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
 				break;
         }
         
@@ -121,7 +107,6 @@ public class DeveloperScreen extends AppCompatActivity{
 			}
 		});
 	}
-	
 	
 	@Override
 	public void onBackPressed() {

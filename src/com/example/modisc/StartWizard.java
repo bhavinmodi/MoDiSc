@@ -44,6 +44,11 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
         et_name = (EditText) findViewById(R.id.SWETName);
         et_group = (EditText) findViewById(R.id.SWETGroup);
         		
+        SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        et_email.setText(spref.getString(new Keys().KEY_EMAIL, ""));
+        et_name.setText(spref.getString(new Keys().KEY_NAME, ""));
+        et_group.setText(String.valueOf(spref.getInt(new Keys().KEY_GROUP, 0)));
+		
         submit = (Button) findViewById(R.id.SWBSubmit);
         submit.setOnClickListener(this);
         
@@ -97,6 +102,14 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 			startActivity(ourIntent);
 			break;
 		}
+	}
+	
+	@Override
+	public void onBackPressed() {
+		Intent startMain = new Intent(Intent.ACTION_MAIN);
+		startMain.addCategory(Intent.CATEGORY_HOME);
+		startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(startMain);
 	}
 	
 }

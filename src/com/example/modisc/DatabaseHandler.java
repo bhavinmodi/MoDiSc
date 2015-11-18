@@ -62,22 +62,41 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     
     // Adding new developer
     void addDeveloper(DeveloperObject developer) {
-        SQLiteDatabase db = this.getWritableDatabase();
- 
+    	
+    	//Check if the developer is already in database
+    	if(getDeveloper(developer.getEmail()) != null){
+    		updateDeveloperGroup(developer.getEmail(), developer.getGroup(), developer.getName());
+    	}else{
+	        SQLiteDatabase db = this.getWritableDatabase();
+	 
+	        ContentValues values = new ContentValues();
+	        values.put(KEY_EMAIL, developer.getEmail());
+	        values.put(KEY_NAME, developer.getName());
+	        values.put(KEY_GROUP, developer.getGroup());
+	        values.put(KEY_GOALS, developer.getGoal());
+	        values.put(KEY_TODAYS_GOAL, developer.getTodaysGoal());
+	        values.put(KEY_OBSTACLE, developer.getObstacle());
+	        
+	        // Inserting Row
+	        db.insert(TABLE_DEVELOPERS, null, values);
+	        db.close(); // Closing database connection
+    	}
+    }
+    
+    //updating group or name
+    void updateDeveloperGroup(String email, int group, String name) {
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	 
         ContentValues values = new ContentValues();
-        values.put(KEY_EMAIL, developer.getEmail());
-        values.put(KEY_NAME, developer.getName());
-        values.put(KEY_GROUP, developer.getGroup());
-        values.put(KEY_GOALS, developer.getGoal());
-        values.put(KEY_TODAYS_GOAL, developer.getTodaysGoal());
-        values.put(KEY_OBSTACLE, developer.getObstacle());
+        values.put(KEY_NAME, name);
+        values.put(KEY_GROUP, group);
         
         // Inserting Row
-        db.insert(TABLE_DEVELOPERS, null, values);
+        db.update(TABLE_DEVELOPERS, values, KEY_EMAIL + "='" + email + "'", null);
         db.close(); // Closing database connection
     }
     
-    // Adding new developer
+    // update developer
     void updateDeveloper(String email, String goals, String todaysGoal, String obstacle) {
         SQLiteDatabase db = this.getWritableDatabase();
  

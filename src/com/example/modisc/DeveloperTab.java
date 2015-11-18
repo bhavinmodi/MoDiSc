@@ -151,14 +151,7 @@ public class DeveloperTab extends Fragment implements View.OnClickListener {
         	personal_goals = (EditText) v.findViewById(R.id.DTETGoals);
         	personal_todaysGoals = (EditText) v.findViewById(R.id.DTETTodaysGoals);
         	personal_obstacle =  (EditText) v.findViewById(R.id.DTETObstacles);
-        }else{
-        	goals = (EditText) v.findViewById(R.id.DTETGoals);
-            todaysGoals = (EditText) v.findViewById(R.id.DTETTodaysGoals);
-            obstacle = (EditText) v.findViewById(R.id.DTETObstacles);
-        }
-        
-        switch(fragVal){
-        case 0:
+        	
         	SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getContext());
     		String email = spref.getString(new Keys().KEY_EMAIL, "Unknown");
     		
@@ -169,10 +162,12 @@ public class DeveloperTab extends Fragment implements View.OnClickListener {
         	personal_todaysGoals.setText(developer.getTodaysGoal());
         	personal_obstacle.setText(developer.getObstacle());
         	update.setOnClickListener(this);
-        	break;
-        case 1:
-        	
-        	identifier.setText(developers.get(0).getName().toUpperCase(Locale.ENGLISH));
+        }else{
+        	goals = (EditText) v.findViewById(R.id.DTETGoals);
+            todaysGoals = (EditText) v.findViewById(R.id.DTETTodaysGoals);
+            obstacle = (EditText) v.findViewById(R.id.DTETObstacles);
+            
+            identifier.setText(developers.get(fragVal - 1).getName().toUpperCase(Locale.ENGLISH));
         	update.setVisibility(View.INVISIBLE);
         	
         	goals.setFocusable(false);
@@ -185,48 +180,11 @@ public class DeveloperTab extends Fragment implements View.OnClickListener {
         	obstacle.setClickable(true);
         	obstacle.setVerticalScrollBarEnabled(true);
         	
-        	goals.setText(developers.get(0).getGoal());
-        	todaysGoals.setText(developers.get(0).getTodaysGoal());
-        	obstacle.setText(developers.get(0).getObstacle());
-        	break;
-        case 2:
-        	identifier.setText(developers.get(1).getName().toUpperCase(Locale.ENGLISH));
-        	update.setVisibility(View.INVISIBLE);
-        	
-        	goals.setFocusable(false);
-        	goals.setClickable(true);
-        	goals.setVerticalScrollBarEnabled(true);
-        	todaysGoals.setFocusable(false);
-        	todaysGoals.setClickable(true);
-        	todaysGoals.setVerticalScrollBarEnabled(true);
-        	obstacle.setFocusable(false);
-        	obstacle.setClickable(true);
-        	obstacle.setVerticalScrollBarEnabled(true);
-        	
-        	goals.setText(developers.get(1).getGoal());
-        	todaysGoals.setText(developers.get(1).getTodaysGoal());
-        	obstacle.setText(developers.get(1).getObstacle());
-        	break;
-        case 3:
-        	identifier.setText(developers.get(2).getName().toUpperCase(Locale.ENGLISH));
-        	update.setVisibility(View.INVISIBLE);
-        	
-        	goals.setFocusable(false);
-        	goals.setClickable(true);
-        	goals.setVerticalScrollBarEnabled(true);
-        	todaysGoals.setFocusable(false);
-        	todaysGoals.setClickable(true);
-        	todaysGoals.setVerticalScrollBarEnabled(true);
-        	obstacle.setFocusable(false);
-        	obstacle.setClickable(true);
-        	obstacle.setVerticalScrollBarEnabled(true);
-        	
-        	goals.setText(developers.get(2).getGoal());
-        	todaysGoals.setText(developers.get(2).getTodaysGoal());
-        	obstacle.setText(developers.get(2).getObstacle());
-        	break;
+        	goals.setText(developers.get(fragVal - 1).getGoal());
+        	todaysGoals.setText(developers.get(fragVal - 1).getTodaysGoal());
+        	obstacle.setText(developers.get(fragVal - 1).getObstacle());
         }
-		
+        
 	}
 
 	@Override
