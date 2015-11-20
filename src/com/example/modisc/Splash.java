@@ -44,6 +44,9 @@ public class Splash extends Activity {
 						if(openClass != null){
 							ourClass = Class.forName(openClass);
 							Intent ourIntent = new Intent(Splash.this, ourClass);
+							if(openClass.contentEquals("com.example.modisc.StartWizard")){
+								ourIntent.putExtra("Caller", "Splash");
+							}
 							startActivity(ourIntent);
 							
 							finish();

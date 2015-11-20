@@ -3,7 +3,10 @@ package com.example.modisc;
 import java.util.List;
 import java.util.Locale;
 
+import org.json.JSONException;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -20,7 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class DeveloperTab extends Fragment implements View.OnClickListener {
+public class DeveloperTab extends Fragment implements View.OnClickListener, OnTaskCompleted {
 	
 	private View mView;
 	private SectionsPagerAdapter mSectionsPagerAdapter;
@@ -32,6 +35,8 @@ public class DeveloperTab extends Fragment implements View.OnClickListener {
     EditText personal_todaysGoals;
     EditText personal_obstacle;
     
+    private AlertDialog authAlert;
+	
 	public DeveloperTab(){
 		setRetainInstance(true);
 	}
@@ -52,8 +57,6 @@ public class DeveloperTab extends Fragment implements View.OnClickListener {
 			viewPager.setAdapter(mSectionsPagerAdapter);
 			viewPager.setCurrentItem(0);
 		}
-		
-		
 		
 		return mView;
 	}
@@ -193,14 +196,60 @@ public class DeveloperTab extends Fragment implements View.OnClickListener {
 		case R.id.DTBUpdate:
 			SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getContext());
 			String email = spref.getString(new Keys().KEY_EMAIL, "Unknown");
+			String name = spref.getString(new Keys().KEY_NAME, "Unknown");
+			int groupid = spref.getInt(new Keys().KEY_GROUP, 0);
+			String goals = personal_goals.getText().toString();
+			String todaysGoal = personal_todaysGoals.getText().toString();
+			String obstacle = personal_obstacle.getText().toString();
 			
 			new DatabaseHandler(getContext()).updateDeveloper(email, 
-					personal_goals.getText().toString(), personal_todaysGoals.getText().toString(),
-					personal_obstacle.getText().toString()); 
+					goals, todaysGoal, obstacle);
 			
+			// Send to server and update server database too
+			DeveloperObject developer = new DeveloperObject(email, name, groupid, goals, todaysGoal, obstacle);
+			try {
+				new SendDataToServer(getContext(), this).execute(new Helper().createJSON(developer));
+			} catch (JSONException e1) {
+				e1.printStackTrace();
+			}
 			break;
 		}
 	}
 
+	@Override
+	public void onTaskCompleted(int result) {
+		if(result == -1){
+			AlertDialog.Builder authDialog = new AlertDialog.Builder(getContext())
+	    			.setTitle("MoDiSc")
+		            .setMessage("Send Failure")
+	    			.setCancelable(false);
+	    	authAlert = authDialog.create();
+			if(!authAlert.isShowing()){
+				authAlert.show();
+			}
+			
+			//Dismiss the dialog after 2 seconds
+    		new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					getActivity().runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							if(authAlert!=null && authAlert.isShowing()){
+								authAlert.dismiss();
+							}
+						}
+					});
+				}
+			}).start();
+		}
+	}
 
 }

@@ -2,6 +2,9 @@ package com.example.modisc;
 
 import java.util.Locale;
 
+import org.json.JSONException;
+
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -14,24 +17,27 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.view.*;
 
-public class StartWizard extends AppCompatActivity implements View.OnClickListener {
+public class StartWizard extends AppCompatActivity implements View.OnClickListener, OnTaskCompleted {
 	
 	EditText et_email, et_group, et_name;
 	Button submit;
 	DatabaseHandler databaseHandler;
+	private AlertDialog authAlert;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		String caller = savedInstanceState.getString("Caller");
+		
 		setContentView(R.layout.activity_startwizard);
 		
-		//Initilaize
-		initialize();
+		//Initialize
+		initialize(caller);
 		
 	}
 	
-	private void initialize(){
+	private void initialize(String caller){
 		//Enabling Logo on the Action Bar
 		Toolbar toolbar = (Toolbar) findViewById(R.id.TLToolBar);
 		toolbar.setNavigationIcon(R.drawable.scrum_icon_small);
@@ -51,6 +57,11 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 		
         submit = (Button) findViewById(R.id.SWBSubmit);
         submit.setOnClickListener(this);
+        
+        if(caller.contentEquals("Settings")){
+        	findViewById(R.id.SWETEmail).setVisibility(View.INVISIBLE);
+        	et_email.setVisibility(View.INVISIBLE);
+        }
         
         databaseHandler = new DatabaseHandler(getApplicationContext());
 	}
@@ -84,6 +95,13 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 			DeveloperObject developer = new DeveloperObject(email, name, group, "", "", "");
 			databaseHandler.addDeveloper(developer);
 			
+			// Send to server and update server database too
+			try {
+				new SendDataToServer(getApplicationContext(), this).execute(new Helper().createJSON(developer));
+			} catch (JSONException e1) {
+				e1.printStackTrace();
+			}
+			
 			SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 			Editor editor = spref.edit();
 			editor.putBoolean(new Keys().KEY_FIRST_FLAG, false);
@@ -105,11 +123,57 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 	}
 	
 	@Override
+	public void onTaskCompleted(int result) {
+		if(result == -1){
+			AlertDialog.Builder authDialog = new AlertDialog.Builder(this)
+	    			.setTitle("MoDiSc")
+		            .setMessage("Send Failure")
+	    			.setCancelable(false);
+	    	authAlert = authDialog.create();
+			if(!authAlert.isShowing()){
+				authAlert.show();
+			}
+			
+			//Dismiss the dialog after 2 seconds
+    		new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							if(authAlert!=null && authAlert.isShowing()){
+								authAlert.dismiss();
+							}
+						}
+					});
+				}
+			}).start();
+		}
+	}
+	
+	@Override
 	public void onBackPressed() {
 		Intent startMain = new Intent(Intent.ACTION_MAIN);
 		startMain.addCategory(Intent.CATEGORY_HOME);
 		startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(startMain);
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		
+		//Make sure all dialog are dismissed
+		if(authAlert != null && authAlert.isShowing()){
+			authAlert.dismiss();
+		}
 	}
 	
 }

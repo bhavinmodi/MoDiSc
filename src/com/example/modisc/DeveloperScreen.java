@@ -33,7 +33,10 @@ public class DeveloperScreen extends AppCompatActivity{
        
 		//Initialize Tabbed View
 		tabView();
-				
+		
+		//Contact Server for updates
+		updateData();
+		
 	}
 	
 	private void initializeComponents(){
@@ -49,7 +52,10 @@ public class DeveloperScreen extends AppCompatActivity{
 		group = spref.getInt(new Keys().KEY_GROUP, 0);
 		name = spref.getString(new Keys().KEY_NAME, "Unknown");
     }
-
+	
+	private void updateData(){
+		
+	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -70,6 +76,7 @@ public class DeveloperScreen extends AppCompatActivity{
         	   try {
 					Class<?> ourClass = Class.forName("com.example.modisc.StartWizard");
 					Intent ourIntent = new Intent(DeveloperScreen.this, ourClass);
+					ourIntent.putExtra("Caller", "Settings");
     				startActivity(ourIntent);
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
