@@ -76,7 +76,12 @@ public class DeveloperScreen extends AppCompatActivity{
         	   try {
 					Class<?> ourClass = Class.forName("com.example.modisc.StartWizard");
 					Intent ourIntent = new Intent(DeveloperScreen.this, ourClass);
-					ourIntent.putExtra("Caller", "Settings");
+					
+					Bundle bundle = new Bundle();
+	                bundle.putString("Caller", "Settings");
+	                //Add the bundle into myIntent for referencing variables
+	                ourIntent.putExtras(bundle);
+	                
     				startActivity(ourIntent);
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();

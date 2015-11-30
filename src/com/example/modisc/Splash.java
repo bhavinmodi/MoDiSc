@@ -43,9 +43,15 @@ public class Splash extends Activity {
 					try {
 						if(openClass != null){
 							ourClass = Class.forName(openClass);
+			                
 							Intent ourIntent = new Intent(Splash.this, ourClass);
+							
 							if(openClass.contentEquals("com.example.modisc.StartWizard")){
-								ourIntent.putExtra("Caller", "Splash");
+								Bundle bundle = new Bundle();
+				                bundle.putString("Caller", "Splash");
+				                //Add the bundle into myIntent for referencing variables
+				                ourIntent.putExtras(bundle);
+				                
 							}
 							startActivity(ourIntent);
 							

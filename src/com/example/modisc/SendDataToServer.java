@@ -31,9 +31,7 @@ public class SendDataToServer extends AsyncTask<JSONObject, String, Integer>{
 	protected Integer doInBackground(JSONObject... params) {
 		
 		try{
-			//Try our original connection method, which will work if a valid signing authority has issued the certificate
-			//Else fall back on our self-signed certificate method
-			URL url = new URL("modisc.atwebpages.com/post");
+			URL url = new URL("http://modisc.dx.am/post.php");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			
 			conn.setRequestMethod("POST");
@@ -76,12 +74,12 @@ public class SendDataToServer extends AsyncTask<JSONObject, String, Integer>{
             in.read(res);
             sResponse = new String(res).trim();
             
+            Log.println(Log.ASSERT, "SendDataToServer", "Response: "+sResponse);
+            
             if(sResponse == null || !sResponse.contentEquals("Success.")){
             	//Server failed to receive event message, write to backlog file
             	return -1;
             }
-            
-           Log.println(Log.ASSERT, "SendDataToServer", "Response: "+sResponse);
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,7 +90,7 @@ public class SendDataToServer extends AsyncTask<JSONObject, String, Integer>{
             }
         }
 		
-		return null;
+		return 1;
 	}
 
 	@Override

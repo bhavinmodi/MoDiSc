@@ -28,7 +28,9 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		String caller = savedInstanceState.getString("Caller");
+		Bundle bundle = getIntent().getExtras();
+		//Extract each value from the bundle for usage
+		String caller = bundle.getString("Caller");
 		
 		setContentView(R.layout.activity_startwizard);
 		
@@ -53,7 +55,10 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
         SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         et_email.setText(spref.getString(new Keys().KEY_EMAIL, ""));
         et_name.setText(spref.getString(new Keys().KEY_NAME, ""));
-        et_group.setText(String.valueOf(spref.getInt(new Keys().KEY_GROUP, 0)));
+        
+        if(!(spref.getInt(new Keys().KEY_GROUP, 0) == 0)){
+        	et_group.setText(String.valueOf(spref.getInt(new Keys().KEY_GROUP, 0)));
+        }
 		
         submit = (Button) findViewById(R.id.SWBSubmit);
         submit.setOnClickListener(this);
