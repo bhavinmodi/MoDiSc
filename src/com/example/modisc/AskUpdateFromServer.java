@@ -1,6 +1,8 @@
 package com.example.modisc;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -15,23 +17,23 @@ import android.util.Log;
 /***
  * 
  * @author Bhavin
- *	Class is responsible for sending messages to the server.
+ *	Class is responsible for getting updates from the server.
  */
-public class SendDataToServer extends AsyncTask<JSONObject, String, Integer>{
+public class AskUpdateFromServer extends AsyncTask<JSONObject, String, JSONObject>{
 
 	private Context context;
-	private OnTaskCompleted listener;
+	private OnReceiveUpdates listener;
 	
-	public SendDataToServer(Context context, OnTaskCompleted listener){
+	public AskUpdateFromServer(Context context, OnReceiveUpdates listener){
         this.listener = listener;
         this.context = context;
     }
 	
 	@Override
-	protected Integer doInBackground(JSONObject... params) {
+	protected JSONObject doInBackground(JSONObject... params) {
 		
 		try{
-			URL url = new URL("http://modisc.dx.am/post.php");
+			URL url = new URL("http://modisc.dx.am/requestUpdate.php");
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			
 			conn.setRequestMethod("POST");
@@ -45,7 +47,7 @@ public class SendDataToServer extends AsyncTask<JSONObject, String, Integer>{
             //if not, store the message in a new file to be sent
             //when available
             if(!new Helper().getInstance().isConnectedToInternet(context)){
-            	return -1;
+            	return null;
             }
 	            
             Log.println(Log.ASSERT, "JSON OBJECT", params[0].toString());
@@ -60,38 +62,42 @@ public class SendDataToServer extends AsyncTask<JSONObject, String, Integer>{
 
 			InputStream in;
 			
-			if(status >= HttpURLConnection.HTTP_BAD_REQUEST)
+			if(status >= HttpURLConnection.HTTP_BAD_REQUEST){
 			    in = conn.getErrorStream();
-			else
+			    return null;
+			}else{
 			    in = conn.getInputStream();
+			}
 			
-			//Log.w("SendDataToServer", "Status is = " + String.valueOf(status));
-			
-            byte[] res = new byte[1024];
-            String sResponse = null;
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"), 8);
+		    StringBuilder sb = new StringBuilder();
 
-            in.read(res);
-            sResponse = new String(res).trim();
-            
-            Log.println(Log.ASSERT, "SendDataToServer", "Response: "+sResponse);
-            
-            if(sResponse == null || !sResponse.contentEquals("Success.")){
-            	//Server failed to receive event message, write to backlog file
-            	return -1;
-            }
-            
+		    String line = null;
+		    while ((line = reader.readLine()) != null)
+		    {
+		        sb.append(line + "\n");
+		    }
+		    String sResponse = sb.toString();
+		    
+		    Log.println(Log.ASSERT, "SendDataToServer", "Response: "+sResponse);
+		    
+		    JSONObject json = new JSONObject(sResponse);
+		    
+            return json;
+           
         } catch (Exception e) {
             e.printStackTrace();
-            return -1;
         }
 		
-		return 1;
+		return null;
 	}
 
 	@Override
-	protected void onPostExecute(Integer result) {
-		super.onPostExecute(result);
-		listener.onTaskCompleted(result);	
+	protected void onPostExecute(JSONObject json) {
+		super.onPostExecute(json);
+		if(json != null){
+			listener.onReceiveUpdates(json);
+		}	
 	}
 
 }

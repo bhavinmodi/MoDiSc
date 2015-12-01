@@ -40,6 +40,13 @@ public class Helper {
 		return json;
 	}
 	
+	protected JSONObject createJSON(String email, int groupid) throws JSONException{
+		JSONObject json = new JSONObject();
+		json.put("email", email);
+		json.put("groupid", groupid);
+		return json;
+	}
+	
 	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
 	protected boolean isConnectedToInternet(Context context){

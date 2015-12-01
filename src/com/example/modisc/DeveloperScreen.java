@@ -1,6 +1,16 @@
 package com.example.modisc;
 
+import java.util.Calendar;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -8,16 +18,22 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentTabHost;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TabHost.OnTabChangeListener;
 
-public class DeveloperScreen extends AppCompatActivity{
+public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdates{
 	
 	//Tab parameters
 	protected FragmentTabHost mTabHost;
 	protected android.support.v4.app.FragmentManager fragmentManager;
+	
+	// Broadcast Receiver registered flag
+	private final String updateBroadcast = "com.modisc.developerScreen.update"; 
+	private Boolean broadcastRegistered = false;
 	
 	String name;
 	int group;
@@ -28,17 +44,45 @@ public class DeveloperScreen extends AppCompatActivity{
 		
 		setContentView(R.layout.activity_developerscreen);
 		
+		// Initialize Broadcast Receiver
+		broadcastReceiverSetup();
+		
 		//Initialize UI Components
 		initializeComponents();
        
+		// Ask server for updates
+		serverUpdate();
+		
+		// Setup alarm to ask for updates after regular intervals
+		updateAlarm();
+		
 		//Initialize Tabbed View
 		tabView();
-		
-		//Contact Server for updates
-		updateData();
-		
 	}
 	
+	private void broadcastReceiverSetup(){
+		if(!broadcastRegistered){
+			IntentFilter filter1 = new IntentFilter(updateBroadcast);
+		    this.registerReceiver(broadcastReceiver, filter1);
+			broadcastRegistered = true;
+		}
+	}
+	
+	// Broadcast Receiver
+	private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+		  
+		@Override
+		  public void onReceive(Context context, Intent intent) {
+				String action = intent.getAction();
+			    
+			    switch(action){
+			    	case updateBroadcast:
+			    		serverUpdate();
+			    		break;
+			    }
+		}
+	};
+			
 	private void initializeComponents(){
 		//Enabling Logo on the Action Bar
 		Toolbar toolbar = (Toolbar) findViewById(R.id.TLToolBar);
@@ -53,10 +97,38 @@ public class DeveloperScreen extends AppCompatActivity{
 		name = spref.getString(new Keys().KEY_NAME, "Unknown");
     }
 	
-	private void updateData(){
+	private void serverUpdate(){
+		SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		String email = spref.getString(new Keys().KEY_EMAIL, "Unknown");
+		int groupid = spref.getInt(new Keys().KEY_GROUP, 0);
 		
+		try {
+			new AskUpdateFromServer(getApplicationContext(), this).execute(new Helper().createJSON(email, groupid));
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 	
+	//Alarm that will update database every 30 mins
+	private void updateAlarm(){
+		
+		Log.w("updateAlarm","Alarm Set");
+		
+		/* Retrieve a PendingIntent that will perform a broadcast */
+        Intent alarmIntent = new Intent("UpdateAlarm");
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+        
+        AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        int interval = 1800000; //Number of milliseconds in 30 mins
+
+        /* Set the alarm to repeat every 30 mins */
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        
+        manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+        		interval, pendingIntent);
+	}
+			
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -138,11 +210,51 @@ public class DeveloperScreen extends AppCompatActivity{
 	}
 
 	@Override
+	public void onReceiveUpdates(JSONObject json) {
+		// Check number of rows (entries)
+		try {
+			DatabaseHandler handler = new DatabaseHandler(getApplicationContext());
+			
+			int numEntries = json.getInt("rows");
+			
+			int counter = 1;
+			while(counter <= numEntries){
+				String email = json.getString("email_".concat(String.valueOf(counter)));
+				int groupid = json.getInt("groupid_".concat(String.valueOf(counter)));
+				String name = json.getString("name_".concat(String.valueOf(counter)));
+				String goals = json.getString("goals_".concat(String.valueOf(counter)));
+				String todaysgoals = json.getString("todaysgoals_".concat(String.valueOf(counter)));
+				String obstacles = json.getString("obstacles_".concat(String.valueOf(counter)));
+				
+				// Check if it already exists in the database
+				if(handler.getDeveloper(email) != null){
+					handler.updateDeveloper(email, goals, todaysgoals, obstacles);
+				}else{
+					// Not in database, create a new entry
+					handler.addDeveloper(new DeveloperObject(email, name, groupid, goals, todaysgoals, obstacles));
+				}
+				
+				counter++;
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		// Invalidate and recreate view, so as to reflect updates
+		View v = findViewById(R.id.DeveloperScreenLayout);
+		v.invalidate();
+	}
+	
+	@Override
 	public void onDestroy() {
 		//Close all open menus, to prevent window leaks	
 		closeOptionsMenu();
 		
+		// Unregister Broadcast Receiver
+		unregisterReceiver(broadcastReceiver);
+		broadcastRegistered = false;
+		
 		super.onDestroy();
 	}
-	
+
 }

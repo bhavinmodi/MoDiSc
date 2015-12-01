@@ -72,23 +72,6 @@ public class Splash extends Activity {
         
         if(first_time){
         	openClass = "com.example.modisc.StartWizard";
-        	
-        	String goal1 = "Create Distributed Scrum Application";
-        	String goal2 = "Create SIS Server Application";
-        	
-        	//Initialize DataBase Entries
-        	DatabaseHandler databaseHandler = new DatabaseHandler(getApplicationContext());
-        	databaseHandler.addDeveloper(new DeveloperObject("jose@gmail.com", "Jose Michael",
-        			1, goal1,"Working on Scrum Master","Time = 3 Days"));
-        	databaseHandler.addDeveloper(new DeveloperObject("vivek@gmail.com", "Vivek Punjabi",
-        			1, goal1, "Working on Sprint Planner", "Time = 4 Days"));
-        	databaseHandler.addDeveloper(new DeveloperObject("jessie@gmail.com", "Jessie Davis",
-        			1, goal1, "Working on Scrum Management", "Time = 3 Days"));
-        	databaseHandler.addDeveloper(new DeveloperObject("steve@gmail.com", "Steve Faurie",
-        			2, goal2, "", ""));
-        	databaseHandler.addDeveloper(new DeveloperObject("Sam@gmail.com", "Sam Panati",
-        			2, goal2, "", ""));
-        	
         }else{
         	openClass = "com.example.modisc.DeveloperScreen";
         }

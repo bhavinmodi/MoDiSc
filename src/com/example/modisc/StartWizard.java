@@ -64,7 +64,10 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
         submit.setOnClickListener(this);
         
         if(caller.contentEquals("Settings")){
-        	findViewById(R.id.SWETEmail).setVisibility(View.INVISIBLE);
+        	// Email TextView hidden
+        	findViewById(R.id.SWTVEmail).setVisibility(View.INVISIBLE);
+        	
+        	// Email Edittext hidden
         	et_email.setVisibility(View.INVISIBLE);
         }
         
