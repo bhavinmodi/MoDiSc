@@ -21,16 +21,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class DeveloperTab extends Fragment implements View.OnClickListener, OnTaskCompleted {
 	
 	private View mView;
-	private SectionsPagerAdapter mSectionsPagerAdapter;
+	protected static SectionsPagerAdapter mSectionsPagerAdapter;
 	private ViewPager viewPager;
 	
 	private List<DeveloperObject> developers;
 	
+	ImageView personal_statusIcon;
+	TextView personal_status;
 	EditText personal_goals;
     EditText personal_todaysGoals;
     EditText personal_obstacle;
@@ -148,9 +151,13 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
         TextView identifier = (TextView) v.findViewById(R.id.DTTVIdentifier);
         Button update = (Button) v.findViewById(R.id.DTBUpdate);
        
+        ImageView statusIcon = null;
+        TextView status = null;
         EditText goals = null, todaysGoals = null, obstacle = null;
         
         if(fragVal == 0){
+        	personal_statusIcon = (ImageView) v.findViewById(R.id.DTIVStatus);
+        	personal_status = (TextView) v.findViewById(R.id.DTTVStatus);
         	personal_goals = (EditText) v.findViewById(R.id.DTETGoals);
         	personal_todaysGoals = (EditText) v.findViewById(R.id.DTETTodaysGoals);
         	personal_obstacle =  (EditText) v.findViewById(R.id.DTETObstacles);
@@ -164,8 +171,26 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
         	personal_goals.setText(developer.getGoal());
         	personal_todaysGoals.setText(developer.getTodaysGoal());
         	personal_obstacle.setText(developer.getObstacle());
+        	
+        	switch(developer.getStatus()){
+        	case 0:
+        		personal_status.setText("Offline");
+        		personal_statusIcon.setBackgroundResource(R.drawable.red);
+        		break;
+        	case 1:
+        		personal_status.setText("Online");
+        		personal_statusIcon.setBackgroundResource(R.drawable.green);
+        		break;
+        	case 2:
+        		personal_status.setText("Busy");
+        		personal_statusIcon.setBackgroundResource(R.drawable.yellow);
+        		break;
+        	}
+        	
         	update.setOnClickListener(this);
         }else{
+        	statusIcon = (ImageView) v.findViewById(R.id.DTIVStatus);
+        	status = (TextView) v.findViewById(R.id.DTTVStatus);
         	goals = (EditText) v.findViewById(R.id.DTETGoals);
             todaysGoals = (EditText) v.findViewById(R.id.DTETTodaysGoals);
             obstacle = (EditText) v.findViewById(R.id.DTETObstacles);
@@ -186,6 +211,21 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
         	goals.setText(developers.get(fragVal - 1).getGoal());
         	todaysGoals.setText(developers.get(fragVal - 1).getTodaysGoal());
         	obstacle.setText(developers.get(fragVal - 1).getObstacle());
+        	
+        	switch(developers.get(fragVal - 1).getStatus()){
+        	case 0:
+        		status.setText("Offline");
+        		statusIcon.setBackgroundResource(R.drawable.red);
+        		break;
+        	case 1:
+        		status.setText("Online");
+        		statusIcon.setBackgroundResource(R.drawable.green);
+        		break;
+        	case 2:
+        		status.setText("Busy");
+        		statusIcon.setBackgroundResource(R.drawable.yellow);
+        		break;
+        	}
         }
         
 	}
@@ -201,12 +241,13 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
 			String goals = personal_goals.getText().toString();
 			String todaysGoal = personal_todaysGoals.getText().toString();
 			String obstacle = personal_obstacle.getText().toString();
+			int status = Integer.parseInt(personal_status.getText().toString());
 			
 			new DatabaseHandler(getContext()).updateDeveloper(email, 
 					goals, todaysGoal, obstacle);
 			
 			// Send to server and update server database too
-			DeveloperObject developer = new DeveloperObject(email, name, groupid, goals, todaysGoal, obstacle);
+			DeveloperObject developer = new DeveloperObject(email, name, groupid, goals, todaysGoal, obstacle,status);
 			try {
 				new SendDataToServer(getContext(), this).execute(new Helper().createJSON(developer));
 			} catch (JSONException e1) {

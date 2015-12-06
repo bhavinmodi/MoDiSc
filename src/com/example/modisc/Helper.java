@@ -18,7 +18,7 @@ public class Helper {
 	}
 	
 	protected JSONObject createJSON(String email, String name, int groupid, String goals,
-			String todaysgoals, String obstacle) throws JSONException{
+			String todaysgoals, String obstacle, int status) throws JSONException{
 		JSONObject json = new JSONObject();
 		json.put("email", email);
 		json.put("name", name);
@@ -26,6 +26,7 @@ public class Helper {
 		json.put("goals", goals);
 		json.put("todaysgoals", todaysgoals);
 		json.put("obstacle", obstacle);
+		json.put("status", status);
 		return json;
 	}
 	
@@ -37,6 +38,7 @@ public class Helper {
 		json.put("goals", developer.getGroup());
 		json.put("todaysgoals", developer.getTodaysGoal());
 		json.put("obstacle", developer.getObstacle());
+		json.put("status", developer.getStatus());
 		return json;
 	}
 	

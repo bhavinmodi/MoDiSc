@@ -17,5 +17,6 @@
 	<string name="todays_goals">Today\'s Goals</string>
 	<string name="obstacles">Obstacles</string>
 	<string name="update">Update</string>
+	<string name="status_content">Status Icon</string>
 	
 </resources>

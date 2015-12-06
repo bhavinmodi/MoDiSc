@@ -3,15 +3,16 @@ package com.example.modisc;
 public class DeveloperObject {
 
 	private String email, name, goal, todaysGoal, obstacle;
-	private int group;
+	private int group, status;
 	
-	public DeveloperObject(String email, String name, int group, String goal, String todaysGoal, String obstacle){
+	public DeveloperObject(String email, String name, int group, String goal, String todaysGoal, String obstacle, int status){
 		this.email = email;
 		this.name = name;
 		this.group = group;
 		this.goal = goal;
 		this.todaysGoal = todaysGoal;
 		this.obstacle = obstacle;
+		this.status = status;
 	}
 	
 	protected void setEmail(String email){
@@ -61,5 +62,14 @@ public class DeveloperObject {
 	protected String getObstacle(){
 		return this.obstacle;
 	}
+	
+	protected void setStatus(int status){
+		this.status = status;
+	}
+	
+	protected int getStatus(){
+		return this.status;
+	}
+	
 }
 

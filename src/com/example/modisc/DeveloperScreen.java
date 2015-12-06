@@ -25,7 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TabHost.OnTabChangeListener;
 
-public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdates{
+public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdates {
 	
 	//Tab parameters
 	protected FragmentTabHost mTabHost;
@@ -225,13 +225,14 @@ public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdat
 				String goals = json.getString("goals_".concat(String.valueOf(counter)));
 				String todaysgoals = json.getString("todaysgoals_".concat(String.valueOf(counter)));
 				String obstacles = json.getString("obstacles_".concat(String.valueOf(counter)));
+				int status = json.getInt("status_".concat(String.valueOf(counter)));
 				
 				// Check if it already exists in the database
 				if(handler.getDeveloper(email) != null){
 					handler.updateDeveloper(email, goals, todaysgoals, obstacles);
 				}else{
 					// Not in database, create a new entry
-					handler.addDeveloper(new DeveloperObject(email, name, groupid, goals, todaysgoals, obstacles));
+					handler.addDeveloper(new DeveloperObject(email, name, groupid, goals, todaysgoals, obstacles, status));
 				}
 				
 				counter++;
@@ -243,6 +244,10 @@ public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdat
 		// Invalidate and recreate view, so as to reflect updates
 		View v = findViewById(R.id.DeveloperScreenLayout);
 		v.invalidate();
+		
+		if(DeveloperTab.mSectionsPagerAdapter != null){
+			DeveloperTab.mSectionsPagerAdapter.notifyDataSetChanged();
+		}
 	}
 	
 	@Override

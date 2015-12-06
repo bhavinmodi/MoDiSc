@@ -100,7 +100,7 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 			
 			int group = Integer.parseInt(group_string);
 			
-			DeveloperObject developer = new DeveloperObject(email, name, group, "", "", "");
+			DeveloperObject developer = new DeveloperObject(email, name, group, "", "", "",1);
 			databaseHandler.addDeveloper(developer);
 			
 			// Send to server and update server database too

@@ -1,83 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true" >
     
-    <TextView 
-        android:id="@+id/DTTVIdentifier"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
+    <LinearLayout
+        android:id="@+id/DTLL1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:textColor="@color/black"
-        android:textSize="18sp" />
+        android:orientation="horizontal">
+        
+        <TextView
+			android:id="@+id/DTTVIdentifier"
+	        android:layout_width="0dp"
+	        android:layout_height="match_parent"
+	        android:layout_weight="0.4"
+	        android:textColor="@color/black"
+	        android:textSize="18sp"
+	        android:gravity="center" />
+	
+        <RelativeLayout
+            android:id="@+id/DTRL1"
+            android:layout_width="0dp"
+	        android:layout_height="match_parent"
+	        android:layout_weight="0.4">
+	        
+         <Button 
+	        android:id="@+id/DTDummy" 
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:background="@drawable/button_click"
+	        style="?android:attr/buttonBarButtonStyle" />
+            
+	    <TextView
+			android:id="@+id/DTTVStatus"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+	        android:textColor="@color/black"
+	        android:textSize="18sp"
+	        android:gravity="center" />
+	    
+	    </RelativeLayout>
+	    
+	        <ImageView
+	            android:id="@+id/DTIVStatus"
+	            android:layout_width="0dp"
+	            android:layout_height="wrap_content"
+	            android:layout_weight="0.1"
+	            android:contentDescription="@string/status_content"
+	            android:cropToPadding="true"
+	            android:scaleType="fitCenter" />
+	        
+    </LinearLayout>
     
-	<TextView 
-        android:id="@+id/DTTVGoals"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-       android:layout_below="@+id/DTTVIdentifier"
-        android:text="@string/goals"
-        android:textColor="@color/black"
-        android:textSize="18sp" />
-    
-    <EditText 
-        android:id="@+id/DTETGoals" 
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/DTTVGoals"
-        android:lines="3"
-        android:inputType="textMultiLine"
-        android:textSize="15sp"
-        android:background="@android:drawable/editbox_background_normal" />
-    
-    <TextView 
-        android:id="@+id/DTTVTodaysGoals" 
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:text="@string/todays_goals"
-        android:layout_below="@+id/DTETGoals"
-        android:textColor="@color/black"
-        android:textSize="18sp" />
-    
-    <EditText 
-        android:id="@+id/DTETTodaysGoals" 
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/DTTVTodaysGoals"
-        android:textSize="15sp"
-        android:lines="3"
-        android:inputType="textMultiLine"
-        android:background="@android:drawable/editbox_background_normal" />
-    
-    <TextView 
-        android:id="@+id/DTTVObstacles" 
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:text="@string/obstacles"
-        android:layout_below="@+id/DTETTodaysGoals"
-        android:textColor="@color/black"
-        android:textSize="18sp" />
-    
-    <EditText 
-        android:id="@+id/DTETObstacles" 
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:lines="3"
-        android:inputType="textMultiLine"
-        android:layout_below="@+id/DTTVObstacles"
-        android:layout_above="@+id/DTBUpdate"
-        android:textSize="15sp"
-        android:background="@android:drawable/editbox_background_normal" />  
-    
-    <Button 
-        android:id="@+id/DTBUpdate" 
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:text="@string/update"
-        android:textSize="20sp"
-        android:background="@drawable/button_click"
-        style="?android:attr/buttonBarButtonStyle" />
+    <View
+      android:id="@+id/DTShadow1"
+      android:layout_below="@+id/DTLL1"
+      android:layout_width="match_parent"
+      android:layout_height="5dp"
+      android:background="@drawable/toolbar_shadow" />
+  
+	 <com.example.modisc.VerticalScrollview
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:layout_below="@+id/DTShadow1"
+    	android:layout_alignParentBottom="true" >
+    	
+	    <include
+       		android:id="@+id/PV_SCROLL"
+       		layout="@layout/page_scroll_layout" /> 
+	     
+	</com.example.modisc.VerticalScrollview >
     
 </RelativeLayout>

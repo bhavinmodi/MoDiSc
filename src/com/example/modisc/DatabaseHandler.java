@@ -32,12 +32,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String KEY_GOALS = "goal";
     private static final String KEY_TODAYS_GOAL = "todaysgoal";
     private static final String KEY_OBSTACLE = "obstacle";
+    private static final String KEY_STATUS = "currentStatus";
     
     private final String CREATE_DEVELOPERS_TABLE = "CREATE TABLE " + TABLE_DEVELOPERS + "("
     		+ KEY_EMAIL + " TEXT PRIMARY KEY,"
             + KEY_NAME + " TEXT," + KEY_GROUP + " INTEGER,"
     		+ KEY_GOALS + " TEXT, " + KEY_TODAYS_GOAL + " TEXT,"
-    		+ KEY_OBSTACLE + " TEXT)";
+    		+ KEY_OBSTACLE + " TEXT,"+ KEY_STATUS +" INTEGER)";
     
     public DatabaseHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -76,6 +77,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	        values.put(KEY_GOALS, developer.getGoal());
 	        values.put(KEY_TODAYS_GOAL, developer.getTodaysGoal());
 	        values.put(KEY_OBSTACLE, developer.getObstacle());
+	        values.put(KEY_STATUS, developer.getStatus());
 	        
 	        // Inserting Row
 	        db.insert(TABLE_DEVELOPERS, null, values);
@@ -83,13 +85,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     	}
     }
     
-    //updating group or name
+    // updating group or name
     void updateDeveloperGroup(String email, int group, String name) {
     	SQLiteDatabase db = this.getWritableDatabase();
-    	 
+    	
         ContentValues values = new ContentValues();
         values.put(KEY_NAME, name);
         values.put(KEY_GROUP, group);
+        
+        // Inserting Row
+        db.update(TABLE_DEVELOPERS, values, KEY_EMAIL + "='" + email + "'", null);
+        db.close(); // Closing database connection
+    }
+    
+    // Update developer status
+    void updateDeveloperStatus(String email, int status){
+    	SQLiteDatabase db = this.getWritableDatabase();
+    	
+        ContentValues values = new ContentValues();
+        values.put(KEY_STATUS, status);
         
         // Inserting Row
         db.update(TABLE_DEVELOPERS, values, KEY_EMAIL + "='" + email + "'", null);
@@ -124,7 +138,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	        if (cursor.moveToFirst()) {
 	            do {
 	            	developer = new DeveloperObject(cursor.getString(0),cursor.getString(1),
-	            			cursor.getInt(2),cursor.getString(3),cursor.getString(4),cursor.getString(5));
+	            			cursor.getInt(2),cursor.getString(3),cursor.getString(4),cursor.getString(5),cursor.getInt(6));
 	                
 	            } while (cursor.moveToNext());
 	        }
@@ -151,7 +165,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	        if (cursor.moveToFirst()) {
 	            do {
 	            	DeveloperObject developer = new DeveloperObject(cursor.getString(0),cursor.getString(1),
-	            			cursor.getInt(2),cursor.getString(3),cursor.getString(4),cursor.getString(5));
+	            			cursor.getInt(2),cursor.getString(3),cursor.getString(4),cursor.getString(5),cursor.getInt(6));
 	                
 	                // Adding developer to list
 	            	developerList.add(developer);

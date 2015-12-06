@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+    
+	<TextView 
+        android:id="@+id/DTTVGoals"
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:layout_alignParentTop="true"
+        android:text="@string/goals"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+    
+    <EditText 
+        android:id="@+id/DTETGoals" 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/DTTVGoals"
+        android:layout_toEndOf="@+id/DTTVGoals"
+        android:lines="5"
+        android:inputType="textMultiLine"
+        android:textSize="15sp"
+        android:background="@android:drawable/editbox_background_normal"
+        android:scrollbarStyle="insideInset"
+		android:scrollbars="vertical" 
+		android:overScrollMode="always" />
+    
+    <TextView 
+        android:id="@+id/DTTVTodaysGoals" 
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="@string/todays_goals"
+        android:layout_below="@+id/DTETGoals"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+    
+    <EditText 
+        android:id="@+id/DTETTodaysGoals" 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/DTETGoals"
+        android:layout_toRightOf="@+id/DTTVTodaysGoals"
+        android:layout_toEndOf="@+id/DTTVTodaysGoals"
+        android:textSize="15sp"
+        android:lines="5"
+        android:inputType="textMultiLine"
+        android:background="@android:drawable/editbox_background_normal" />
+    
+    <TextView
+        android:id="@+id/DTTVObstacles" 
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="@string/obstacles"
+        android:layout_below="@+id/DTETTodaysGoals"
+        android:textColor="@color/black"
+        android:textSize="18sp" />
+    
+    <EditText 
+        android:id="@+id/DTETObstacles" 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:lines="5"
+        android:inputType="textMultiLine"
+        android:layout_toRightOf="@+id/DTTVObstacles"
+        android:layout_toEndOf="@+id/DTTVObstacles"
+        android:layout_below="@+id/DTETTodaysGoals"
+        android:textSize="15sp"
+        android:background="@android:drawable/editbox_background_normal" />
+    
+     <Button 
+        android:id="@+id/DTBUpdate" 
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/DTETObstacles"
+        android:text="@string/update"
+        android:textSize="20sp"
+        android:background="@drawable/button_click"
+        style="?android:attr/buttonBarButtonStyle" />
+     
+</RelativeLayout>
