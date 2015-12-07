@@ -80,12 +80,6 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
  		
         DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
         developers = databaseHandler.getAllDevelopers(group);
-        
-        for(int index = 0; index < developers.size(); index++){
-        	if(developers.get(index).getName().contentEquals(spref.getString(new Keys().KEY_NAME, ""))){
-        		developers.remove(index);
-        	}
-        }
 	}
 	
 	@Override
@@ -152,7 +146,6 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
     }
 
 	private void initializeDeveloperEntry(View v, int fragVal){
-		
 		//Initialize list of entries		
         TextView identifier = (TextView) v.findViewById(R.id.DTTVIdentifier);
         Button update = (Button) v.findViewById(R.id.DTBUpdate);
@@ -209,7 +202,7 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
             todaysGoals = (EditText) v.findViewById(R.id.DTETTodaysGoals);
             obstacle = (EditText) v.findViewById(R.id.DTETObstacles);
             
-            identifier.setText(developers.get(fragVal - 1).getName().toUpperCase(Locale.ENGLISH));
+            identifier.setText(developers.get(fragVal).getName().toUpperCase(Locale.ENGLISH));
         	update.setVisibility(View.INVISIBLE);
         	
         	goals.setFocusable(false);
@@ -222,11 +215,11 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
         	obstacle.setClickable(true);
         	obstacle.setVerticalScrollBarEnabled(true);
         	
-        	goals.setText(developers.get(fragVal - 1).getGoal());
-        	todaysGoals.setText(developers.get(fragVal - 1).getTodaysGoal());
-        	obstacle.setText(developers.get(fragVal - 1).getObstacle());
+        	goals.setText(developers.get(fragVal).getGoal());
+        	todaysGoals.setText(developers.get(fragVal).getTodaysGoal());
+        	obstacle.setText(developers.get(fragVal).getObstacle());
         	
-        	switch(developers.get(fragVal - 1).getStatus()){
+        	switch(developers.get(fragVal).getStatus()){
         	case 0:
         		status.setText("Offline");
         		statusIcon.setBackgroundResource(R.drawable.red);

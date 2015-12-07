@@ -266,12 +266,6 @@ public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdat
         DatabaseHandler databaseHandler = new DatabaseHandler(getApplicationContext());
         DeveloperTab.developers.clear();
         DeveloperTab.developers = databaseHandler.getAllDevelopers(group);
-        
-        for(int index = 0; index < DeveloperTab.developers.size(); index++){
-        	if(DeveloperTab.developers.get(index).getName().contentEquals(spref.getString(new Keys().KEY_NAME, ""))){
-        		DeveloperTab.developers.remove(index);
-        	}
-        }
 	}
 	
 	@Override
