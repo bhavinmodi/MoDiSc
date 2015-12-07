@@ -36,11 +36,30 @@
         android:background="@android:drawable/editbox_background_normal" />
     
     <TextView 
+        android:id="@+id/SWTVEmail" 
+        android:layout_width="wrap_content"
+        android:layout_height="30dp"
+        android:text="@string/email"
+        android:layout_below="@+id/SWETName"
+        android:textColor="@color/black"
+        android:textSize="22sp" />
+    
+    <EditText 
+        android:id="@+id/SWETEmail" 
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:inputType="textEmailAddress"
+        android:hint="@string/enter_email"
+        android:layout_below="@+id/SWTVEmail"
+        android:textSize="22sp"
+        android:background="@android:drawable/editbox_background_normal" />  
+        
+    <TextView 
         android:id="@+id/SWTVGroup" 
         android:layout_width="wrap_content"
         android:layout_height="30dp"
         android:text="@string/group"
-        android:layout_below="@+id/SWETName"
+        android:layout_below="@+id/SWETEmail"
         android:textColor="@color/black"
         android:textSize="22sp" />
     
@@ -55,31 +74,12 @@
         android:inputType="number"
         android:background="@android:drawable/editbox_background_normal" />
     
-    <TextView 
-        android:id="@+id/SWTVEmail" 
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:text="@string/email"
-        android:layout_below="@+id/SWETGroup"
-        android:textColor="@color/black"
-        android:textSize="22sp" />
-    
-    <EditText 
-        android:id="@+id/SWETEmail" 
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        android:inputType="textEmailAddress"
-        android:hint="@string/enter_email"
-        android:layout_below="@+id/SWTVEmail"
-        android:textSize="22sp"
-        android:background="@android:drawable/editbox_background_normal" />  
-    
      <ImageView
         android:id="@+id/SWIVBgImage"
         android:contentDescription="@string/splash_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/SWETEmail"
+        android:layout_below="@+id/SWETGroup"
         android:layout_above="@+id/SWBSubmit"
         android:layout_centerHorizontal="true"
         android:padding="5dp"

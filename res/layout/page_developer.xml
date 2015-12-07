@@ -16,7 +16,7 @@
 			android:id="@+id/DTTVIdentifier"
 	        android:layout_width="0dp"
 	        android:layout_height="match_parent"
-	        android:layout_weight="0.4"
+	        android:layout_weight="0.55"
 	        android:textColor="@color/black"
 	        android:textSize="18sp"
 	        android:gravity="center" />
@@ -48,7 +48,7 @@
 	            android:id="@+id/DTIVStatus"
 	            android:layout_width="0dp"
 	            android:layout_height="wrap_content"
-	            android:layout_weight="0.1"
+	            android:layout_weight="0.05"
 	            android:contentDescription="@string/status_content"
 	            android:cropToPadding="true"
 	            android:scaleType="fitCenter" />

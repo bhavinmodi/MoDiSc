@@ -45,7 +45,7 @@ public class SendDataToServer extends AsyncTask<JSONObject, String, Integer>{
             //if not, store the message in a new file to be sent
             //when available
             if(!new Helper().getInstance().isConnectedToInternet(context)){
-            	return -1;
+            	return -2;
             }
 	            
             Log.println(Log.ASSERT, "JSON OBJECT", params[0].toString());

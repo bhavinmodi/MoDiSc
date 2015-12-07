@@ -24,13 +24,21 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 	DatabaseHandler databaseHandler;
 	private AlertDialog authAlert;
 	
+	String email = null;
+	String name = null;
+	int group = -1;
+	DeveloperObject developer = null;
+	
+	// Caller
+	String caller;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		Bundle bundle = getIntent().getExtras();
 		//Extract each value from the bundle for usage
-		String caller = bundle.getString("Caller");
+		caller = bundle.getString("Caller");
 		
 		setContentView(R.layout.activity_startwizard);
 		
@@ -63,12 +71,17 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
         submit = (Button) findViewById(R.id.SWBSubmit);
         submit.setOnClickListener(this);
         
-        if(caller.contentEquals("Settings")){
+        /*if(caller.contentEquals("Settings")){
         	// Email TextView hidden
         	findViewById(R.id.SWTVEmail).setVisibility(View.INVISIBLE);
         	
         	// Email Edittext hidden
         	et_email.setVisibility(View.INVISIBLE);
+        }*/
+        
+        if(caller.contentEquals("Splash")){
+        	findViewById(R.id.SWTVGroup).setVisibility(View.INVISIBLE);
+        	et_group.setVisibility(View.INVISIBLE);
         }
         
         databaseHandler = new DatabaseHandler(getApplicationContext());
@@ -80,59 +93,71 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 		switch(v.getId()){
 		case R.id.SWBSubmit:
 			//Store data to Database
-			String email = et_email.getText().toString();
-			
-			if(email.contentEquals("")){
-				break;
+			if(caller.contentEquals("Splash")){
+				//Store data to Database
+				email = et_email.getText().toString();
+				
+				if(email.contentEquals("")){
+					break;
+				}
+				
+				name = et_name.getText().toString().toUpperCase(Locale.ENGLISH);
+				
+				if(name.contentEquals("")){
+					break;
+				}
+				
+				developer = new DeveloperObject(email, name, -1, "", "", "",1);
+				databaseHandler.addDeveloper(developer);
+				
+				// Send to server and update server database too
+				try {
+					new SendDataToServer(getApplicationContext(), this).execute(new Helper().createJSON(developer));
+				} catch (JSONException e1) {
+					e1.printStackTrace();
+				}
+				
+			}else{
+				//Store data to Database
+				email = et_email.getText().toString();
+				
+				if(email.contentEquals("")){
+					break;
+				}
+				
+				name = et_name.getText().toString().toUpperCase(Locale.ENGLISH);
+				
+				if(name.contentEquals("")){
+					break;
+				}
+				
+				String group_string = et_group.getText().toString();
+				
+				if(group_string.contentEquals("")){
+					break;
+				}
+				
+				group = Integer.parseInt(group_string);
+				
+				SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+				
+				developer = new DeveloperObject(email, name, group, "", "", "",spref.getInt(new Keys().KEY_STATUS, 0));
+				
+				// Send to server and update server database too
+				try {
+					new SendDataToServer(getApplicationContext(), this).execute(new Helper().createJSON(developer));
+				} catch (JSONException e1) {
+					e1.printStackTrace();
+				}
 			}
 			
-			String name = et_name.getText().toString().toUpperCase(Locale.ENGLISH);
-			
-			if(name.contentEquals("")){
-				break;
-			}
-			
-			String group_string = et_group.getText().toString();
-			
-			if(group_string.contentEquals("")){
-				break;
-			}
-			
-			int group = Integer.parseInt(group_string);
-			
-			DeveloperObject developer = new DeveloperObject(email, name, group, "", "", "",1);
-			databaseHandler.addDeveloper(developer);
-			
-			// Send to server and update server database too
-			try {
-				new SendDataToServer(getApplicationContext(), this).execute(new Helper().createJSON(developer));
-			} catch (JSONException e1) {
-				e1.printStackTrace();
-			}
-			
-			SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-			Editor editor = spref.edit();
-			editor.putBoolean(new Keys().KEY_FIRST_FLAG, false);
-			editor.putInt(new Keys().KEY_GROUP, group);
-			editor.putString(new Keys().KEY_NAME, name);
-			editor.putString(new Keys().KEY_EMAIL, email);
-			editor.commit();
-			
-			Class<?> ourClass = null;
-			try {
-				ourClass = Class.forName("com.example.modisc.DeveloperScreen");
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			}
-			Intent ourIntent = new Intent(this, ourClass);
-			startActivity(ourIntent);
 			break;
 		}
 	}
 	
 	@Override
 	public void onTaskCompleted(int result) {
-		if(result == -1){
+		if(result < 0){
 			AlertDialog.Builder authDialog = new AlertDialog.Builder(this)
 	    			.setTitle("MoDiSc")
 		            .setMessage("Send Failure")
@@ -163,6 +188,50 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 					});
 				}
 			}).start();
+		}else{
+			if(caller.contains("Settings")){
+				
+				// Remove all other group information
+				databaseHandler.deleteGroupFromTable(group);
+				
+				// Add new developer
+				databaseHandler.addDeveloper(developer);
+				
+				SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+				Editor editor = spref.edit();
+				editor.putBoolean(new Keys().KEY_FIRST_FLAG, false);
+				editor.putInt(new Keys().KEY_GROUP, group);
+				editor.putString(new Keys().KEY_NAME, name);
+				editor.putString(new Keys().KEY_EMAIL, email);
+				editor.commit();
+				
+				Class<?> ourClass = null;
+				try {
+					ourClass = Class.forName("com.example.modisc.DeveloperScreen");
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+				Intent ourIntent = new Intent(this, ourClass);
+				startActivity(ourIntent);
+			}
+			
+			if(caller.contains("Splash")){
+				SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+				Editor editor = spref.edit();
+				editor.putBoolean(new Keys().KEY_FIRST_FLAG, false);
+				editor.putString(new Keys().KEY_NAME, name);
+				editor.putString(new Keys().KEY_EMAIL, email);
+				editor.commit();
+				
+				Class<?> ourClass = null;
+				try {
+					ourClass = Class.forName("com.example.modisc.DeveloperScreen");
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+				Intent ourIntent = new Intent(this, ourClass);
+				startActivity(ourIntent);
+			}
 		}
 	}
 	

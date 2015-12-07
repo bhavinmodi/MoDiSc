@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -16,7 +17,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -28,10 +31,13 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
 	
 	private View mView;
 	protected static SectionsPagerAdapter mSectionsPagerAdapter;
+	protected static DatabaseHandler databaseHandler;
+	protected static SharedPreferences spref;
 	private ViewPager viewPager;
 	
-	private List<DeveloperObject> developers;
+	protected static List<DeveloperObject> developers;
 	
+	Button status_Button;
 	ImageView personal_statusIcon;
 	TextView personal_status;
 	EditText personal_goals;
@@ -48,6 +54,9 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 	
 		if(mView == null){
+			spref = PreferenceManager.getDefaultSharedPreferences(getContext());
+			databaseHandler = new DatabaseHandler(getContext());
+			
 			mView = inflater.inflate(R.layout.fragment_developertab, container, false);
 			View layout = mView.findViewById(R.id.FDLayout);
 			layout.setBackgroundColor(Color.WHITE);
@@ -64,10 +73,10 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
 		return mView;
 	}
 	
-	private void initializeMainLayout(){
+	protected void initializeMainLayout(){
 		//Initialize list of entries
 		SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getContext());
- 		int group = spref.getInt(new Keys().KEY_GROUP, 0);
+ 		int group = spref.getInt(new Keys().KEY_GROUP, -1);
  		
         DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
         developers = databaseHandler.getAllDevelopers(group);
@@ -77,7 +86,6 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
         		developers.remove(index);
         	}
         }
-
 	}
 	
 	@Override
@@ -104,10 +112,8 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
   
         @Override  
         public int getCount() {
-        	SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getContext());
-    		int group = spref.getInt(new Keys().KEY_GROUP, 0);
+    		int group = spref.getInt(new Keys().KEY_GROUP, -1);
     		
-    		DatabaseHandler databaseHandler = new DatabaseHandler(getContext());
     		int countTabs = databaseHandler.getDeveloperCount(group);
     		return countTabs;
         }  
@@ -151,11 +157,16 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
         TextView identifier = (TextView) v.findViewById(R.id.DTTVIdentifier);
         Button update = (Button) v.findViewById(R.id.DTBUpdate);
        
+        Button status_change;
         ImageView statusIcon = null;
         TextView status = null;
         EditText goals = null, todaysGoals = null, obstacle = null;
         
         if(fragVal == 0){
+        	// Activate status change option
+        	status_Button = (Button) v.findViewById(R.id.DTDummy);
+        	status_Button.setOnClickListener(this);
+        	
         	personal_statusIcon = (ImageView) v.findViewById(R.id.DTIVStatus);
         	personal_status = (TextView) v.findViewById(R.id.DTTVStatus);
         	personal_goals = (EditText) v.findViewById(R.id.DTETGoals);
@@ -189,6 +200,9 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
         	
         	update.setOnClickListener(this);
         }else{
+        	status_change = (Button) v.findViewById(R.id.DTDummy);
+        	status_change.setClickable(false);
+        	
         	statusIcon = (ImageView) v.findViewById(R.id.DTIVStatus);
         	status = (TextView) v.findViewById(R.id.DTTVStatus);
         	goals = (EditText) v.findViewById(R.id.DTETGoals);
@@ -234,43 +248,105 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
 	public void onClick(View v) {
 		switch(v.getId()){
 		case R.id.DTBUpdate:
-			SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getContext());
-			String email = spref.getString(new Keys().KEY_EMAIL, "Unknown");
-			String name = spref.getString(new Keys().KEY_NAME, "Unknown");
-			int groupid = spref.getInt(new Keys().KEY_GROUP, 0);
-			String goals = personal_goals.getText().toString();
-			String todaysGoal = personal_todaysGoals.getText().toString();
-			String obstacle = personal_obstacle.getText().toString();
-			int status = Integer.parseInt(personal_status.getText().toString());
-			
-			new DatabaseHandler(getContext()).updateDeveloper(email, 
-					goals, todaysGoal, obstacle);
-			
-			// Send to server and update server database too
-			DeveloperObject developer = new DeveloperObject(email, name, groupid, goals, todaysGoal, obstacle,status);
-			try {
-				new SendDataToServer(getContext(), this).execute(new Helper().createJSON(developer));
-			} catch (JSONException e1) {
-				e1.printStackTrace();
-			}
+			callUpdate();
+			break;
+		case R.id.DTDummy:
+			//Creating the instance of PopupMenu
+            PopupMenu popup = new PopupMenu(getActivity(), status_Button);
+            
+            //Inflating the Popup using xml file
+            popup.getMenuInflater()
+                .inflate(R.menu.popup_menu, popup.getMenu());
+
+            //registering popup with OnMenuItemClickListener
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                public boolean onMenuItemClick(MenuItem item) {
+                	
+                	SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getContext());
+    				Editor editor = spref.edit();
+    				
+                    switch(item.getItemId()){
+                    case R.id.online:
+                    	editor.putInt(new Keys().KEY_STATUS, 1);
+                    	personal_status.setText("Online");
+                    	personal_statusIcon.setBackgroundResource(R.drawable.green);
+                    	callUpdate();
+                    	break;
+                    case R.id.offline:
+                    	editor.putInt(new Keys().KEY_STATUS, 0);
+                    	personal_status.setText("Offline");
+                    	personal_statusIcon.setBackgroundResource(R.drawable.red);
+                    	callUpdate();
+                    	break;
+                    case R.id.busy:
+                    	editor.putInt(new Keys().KEY_STATUS, 2);
+                    	personal_status.setText("Busy");
+                    	personal_statusIcon.setBackgroundResource(R.drawable.yellow);
+                    	callUpdate();
+                    	break;
+                    }
+                    
+    				editor.commit();
+                    return true;
+                }
+            });
+            
+            popup.show(); //showing popup menu
+            
 			break;
 		}
 	}
 
+	private void callUpdate(){
+		SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getContext());
+		String email = spref.getString(new Keys().KEY_EMAIL, "Unknown");
+		String name = spref.getString(new Keys().KEY_NAME, "Unknown");
+		int groupid = spref.getInt(new Keys().KEY_GROUP, 0);
+		String goals = personal_goals.getText().toString();
+		String todaysGoal = personal_todaysGoals.getText().toString();
+		String obstacle = personal_obstacle.getText().toString();
+		String statusString = personal_status.getText().toString();
+		
+		int status = 0;
+		switch(statusString){
+		case "Online":
+			status = 1;
+			break;
+		case "Offline":
+			status = 0;
+			break;
+		case "Busy":
+			status = 2;
+			break;
+		}
+		
+		new DatabaseHandler(getContext()).updateDeveloper(email, 
+				goals, todaysGoal, obstacle, status);
+		
+		// Send to server and update server database too
+		DeveloperObject developer = new DeveloperObject(email, name, groupid, goals, todaysGoal, obstacle, status);
+		try {
+			new SendDataToServer(getContext(), this).execute(new Helper().createJSON(developer));
+		} catch (JSONException e1) {
+			e1.printStackTrace();
+		}
+	}
+	
 	@Override
 	public void onTaskCompleted(int result) {
-		if(result == -1){
+		switch(result){
+		case -1:
 			AlertDialog.Builder authDialog = new AlertDialog.Builder(getContext())
-	    			.setTitle("MoDiSc")
-		            .setMessage("Send Failure")
-	    			.setCancelable(false);
-	    	authAlert = authDialog.create();
+			.setTitle("MoDiSc")
+            .setMessage("Send Failure")
+			.setCancelable(false);
+			authAlert = authDialog.create();
 			if(!authAlert.isShowing()){
 				authAlert.show();
 			}
 			
 			//Dismiss the dialog after 2 seconds
-    		new Thread(new Runnable() {
+			new Thread(new Runnable() {
 				
 				@Override
 				public void run() {
@@ -290,7 +366,41 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
 					});
 				}
 			}).start();
+					break;
+		case -2:
+			AlertDialog.Builder authDialog2 = new AlertDialog.Builder(getContext())
+			.setTitle("MoDiSc")
+            .setMessage("Send Failure - No Internet Connection")
+			.setCancelable(false);
+			authAlert = authDialog2.create();
+			if(!authAlert.isShowing()){
+				authAlert.show();
+			}
+			
+			//Dismiss the dialog after 2 seconds
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					getActivity().runOnUiThread(new Runnable() {
+						
+						@Override
+						public void run() {
+							if(authAlert!=null && authAlert.isShowing()){
+								authAlert.dismiss();
+							}
+						}
+					});
+				}
+			}).start();
+			break;
 		}
+		
 	}
 
 }

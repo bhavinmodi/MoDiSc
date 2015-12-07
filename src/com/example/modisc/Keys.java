@@ -5,4 +5,5 @@ public class Keys {
 	protected final String KEY_GROUP = "group";
 	protected final String KEY_NAME = "name";
 	protected final String KEY_EMAIL = "email";
+	protected final String KEY_STATUS = "status";
 }

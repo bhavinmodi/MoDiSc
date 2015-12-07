@@ -111,13 +111,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     
     // update developer
-    void updateDeveloper(String email, String goals, String todaysGoal, String obstacle) {
+    void updateDeveloper(String email, String goals, String todaysGoal, String obstacle, int status) {
         SQLiteDatabase db = this.getWritableDatabase();
  
         ContentValues values = new ContentValues();
         values.put(KEY_GOALS, goals);
         values.put(KEY_TODAYS_GOAL, todaysGoal);
         values.put(KEY_OBSTACLE, obstacle);
+        values.put(KEY_STATUS, status);
         
         // Inserting Row
         db.update(TABLE_DEVELOPERS, values, KEY_EMAIL + "='" + email + "'", null);
@@ -200,9 +201,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return count;
     }
     
+    // Delete all entries of a particular group
+    public void deleteGroupFromTable(int group){
+    	SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("DELETE FROM " + TABLE_DEVELOPERS + " where NOT(" + KEY_GROUP + "=" + String.valueOf(group) + ")");
+        db.close();
+    }
+    
     //Delete all entries from Table
     public void resetDevelopersTable(){
-    	// Delete all entries from table
     	SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_DEVELOPERS);
         db.close();

@@ -22,7 +22,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TabHost.OnTabChangeListener;
 
 public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdates {
@@ -50,9 +49,6 @@ public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdat
 		//Initialize UI Components
 		initializeComponents();
        
-		// Ask server for updates
-		serverUpdate();
-		
 		// Setup alarm to ask for updates after regular intervals
 		updateAlarm();
 		
@@ -60,6 +56,13 @@ public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdat
 		tabView();
 	}
 	
+	@Override
+	protected void onResume() {
+		// Ask server for updates
+		serverUpdate();
+		super.onResume();
+	}
+
 	private void broadcastReceiverSetup(){
 		if(!broadcastRegistered){
 			IntentFilter filter1 = new IntentFilter(updateBroadcast);
@@ -93,19 +96,21 @@ public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdat
         setSupportActionBar(toolbar);
         
         SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-		group = spref.getInt(new Keys().KEY_GROUP, 0);
+		group = spref.getInt(new Keys().KEY_GROUP, -1);
 		name = spref.getString(new Keys().KEY_NAME, "Unknown");
     }
 	
 	private void serverUpdate(){
 		SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 		String email = spref.getString(new Keys().KEY_EMAIL, "Unknown");
-		int groupid = spref.getInt(new Keys().KEY_GROUP, 0);
+		int groupid = spref.getInt(new Keys().KEY_GROUP, -1);
 		
-		try {
-			new AskUpdateFromServer(getApplicationContext(), this).execute(new Helper().createJSON(email, groupid));
-		} catch (JSONException e) {
-			e.printStackTrace();
+		if(groupid != -1){
+			try {
+				new AskUpdateFromServer(getApplicationContext(), this).execute(new Helper().createJSON(email, groupid));
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -155,6 +160,8 @@ public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdat
 	                ourIntent.putExtras(bundle);
 	                
     				startActivity(ourIntent);
+    				
+    				finish();
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -229,7 +236,7 @@ public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdat
 				
 				// Check if it already exists in the database
 				if(handler.getDeveloper(email) != null){
-					handler.updateDeveloper(email, goals, todaysgoals, obstacles);
+					handler.updateDeveloper(email, goals, todaysgoals, obstacles, status);
 				}else{
 					// Not in database, create a new entry
 					handler.addDeveloper(new DeveloperObject(email, name, groupid, goals, todaysgoals, obstacles, status));
@@ -237,17 +244,34 @@ public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdat
 				
 				counter++;
 			}
+			
+			if(numEntries != 0){
+				updateList();
+				
+				if(DeveloperTab.mSectionsPagerAdapter != null){
+					DeveloperTab.mSectionsPagerAdapter.notifyDataSetChanged();
+				}
+			}
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
 		
-		// Invalidate and recreate view, so as to reflect updates
-		View v = findViewById(R.id.DeveloperScreenLayout);
-		v.invalidate();
-		
-		if(DeveloperTab.mSectionsPagerAdapter != null){
-			DeveloperTab.mSectionsPagerAdapter.notifyDataSetChanged();
-		}
+	}
+	
+	protected void updateList(){
+		//Initialize list of entries
+		SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+ 		int group = spref.getInt(new Keys().KEY_GROUP, -1);
+ 		
+        DatabaseHandler databaseHandler = new DatabaseHandler(getApplicationContext());
+        DeveloperTab.developers.clear();
+        DeveloperTab.developers = databaseHandler.getAllDevelopers(group);
+        
+        for(int index = 0; index < DeveloperTab.developers.size(); index++){
+        	if(DeveloperTab.developers.get(index).getName().contentEquals(spref.getString(new Keys().KEY_NAME, ""))){
+        		DeveloperTab.developers.remove(index);
+        	}
+        }
 	}
 	
 	@Override

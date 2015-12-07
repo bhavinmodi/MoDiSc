@@ -18,5 +18,8 @@
 	<string name="obstacles">Obstacles</string>
 	<string name="update">Update</string>
 	<string name="status_content">Status Icon</string>
+	<string name="menu_online">Online</string>
+	<string name="menu_offline">Offline</string>
+	<string name="menu_busy">Busy</string>
 	
 </resources>
