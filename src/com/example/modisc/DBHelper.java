@@ -51,6 +51,24 @@ public class DBHelper extends SQLiteOpenHelper {
 		contentValues.put("priority", priority);
 		contentValues.put("status", status);
 		contentValues.put("owner", owner);
+		/*db.execSQL("INSERT INTO `TaskList`(`id`, `type`, `name`, `desc`, `priority`, `status`, `owner`) VALUES (4,\"Bug\", \"Create database schema based on requirements\", \"Read the requirements document and come up with a schema for the database. Also, share it with the team and take feedback\", 1, \"Assigned\", \"Bhavin\"");
+
+		db.execSQL("INSERT INTO `TaskList`(`id`, `type`, `name`, `desc`, `priority`, `status`, `owner`) VALUES (5,\"Task\", \"Arrange feedback meeting\", \"After the schema is created, arrange a meeting and take feedback from all the developers and managers and incorporate them in the updated schema\", 1, \"Assigned\", \"Bhavin\"");
+
+		db.execSQL("INSERT INTO `TaskList`(`id`, `type`, `name`, `desc`, `priority`, `status`, `owner`) VALUES (6,\"Task\", \"Create updated schema\", \"Update the database schema based on the feedback received from the team members\", 1, \"Assigned\", \"Bhavin\"");
+
+		db.execSQL("INSERT INTO `TaskList`(`id`, `type`, `name`, `desc`, `priority`, `status`, `owner`) VALUES (7,\"Task\", \"Add a new class that calculates the time between two gievn events\", \"Create a new class CalcTimeBetweenEvents that takes two event parameters and returns the time difference between these two events\", 1, \"Created\", \"Vivek\"");
+
+		db.execSQL("INSERT INTO `TaskList`(`id`, `type`, `name`, `desc`, `priority`, `status`, `owner`) VALUES (8,\"Bug\", \"Update the patient details in summary\", \"The patient details are displayed in wromg columns om the summary page. Update the Summary class to display them in required order\", 1, \"Modified\", \"Sam\"");
+
+		db.execSQL("INSERT INTO `TaskList`(`id`, `type`, `name`, `desc`, `priority`, `status`, `owner`) VALUES (9,\"Task\", \"Add abstract class to display all the parameters of the simulators\", \"Create an abstract class Display that contains all the method skeletons to display all the parameters and their respective timer values in that particular simulation\", 1, \"Re-assigned\", \"Jose\"");
+
+		db.execSQL("INSERT INTO `TaskList`(`id`, `type`, `name`, `desc`, `priority`, `status`, `owner`) VALUES (10,\"Bug\", \"Update the event handlers for ECG\", \"Change the event handlers for class ECG to adjust to the manual setting changes\", 0, \"In Test\", \"Steve\"");
+
+		db.execSQL("INSERT INTO `TaskList`(`id`, `type`, `name`, `desc`, `priority`, `status`, `owner`) VALUES (11,\"Task\", \"Modify graph view for ECG\", \"Update the graph view for ECG such that it shows the old graph beside the current along with the progress\", 0, \"Assigned\", \"Steve\"");
+
+		db.execSQL("INSERT INTO `TaskList`(`id`, `type`, `name`, `desc`, `priority`, `status`, `owner`) VALUES (12,\"Task\", \"Add bubble chart to ECG display screen\", \"Create a new graph view called bubble chart to display the data in bubble format. Place it next to the original graph\", 0, \"Assigned\", \"Jesse\"");
+*/
 		db.insert("TaskList", null, contentValues);
 		return true;
 	}

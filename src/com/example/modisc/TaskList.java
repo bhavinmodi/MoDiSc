@@ -37,7 +37,7 @@ public class TaskList extends Fragment implements SaveData, OnReceiveUpdates {
 
 			/******** Take some data in Arraylist ( CustomListViewValuesArr ) ***********/
 			myDB = new DBHelper(getContext());
-			//addRandomData();
+			addRandomData();
 			loadData();
 
 			Resources res = getResources();

@@ -326,11 +326,21 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
 		
 		// Send to server and update server database too
 		DeveloperObject developer = new DeveloperObject(email, name, groupid, goals, todaysGoal, obstacle, status);
-		try {
-			new SendDataToServer(getContext(), this).execute(new Helper().createJSON(developer));
-		} catch (JSONException e1) {
-			e1.printStackTrace();
+		
+		if(spref.getString(new Keys().KEY_USER, "").contains("master")){
+			try {
+				new SendDataToServerMaster(getContext(), this).execute(new Helper().createJSON(developer));
+			} catch (JSONException e1) {
+				e1.printStackTrace();
+			}
+		}else{
+			try {
+				new SendDataToServer(getContext(), this).execute(new Helper().createJSON(developer));
+			} catch (JSONException e1) {
+				e1.printStackTrace();
+			}
 		}
+		
 	}
 	
 	@Override
