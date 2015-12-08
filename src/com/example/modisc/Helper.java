@@ -49,6 +49,12 @@ public class Helper {
 		return json;
 	}
 	
+	protected JSONObject createJSON(String email) throws JSONException{
+		JSONObject json = new JSONObject();
+		json.put("email", email);
+		return json;
+	}
+	
 	@SuppressWarnings("deprecation")
 	@SuppressLint("NewApi")
 	protected boolean isConnectedToInternet(Context context){

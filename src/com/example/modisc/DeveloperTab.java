@@ -108,7 +108,15 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
         public int getCount() {
     		int group = spref.getInt(new Keys().KEY_GROUP, -1);
     		
-    		int countTabs = databaseHandler.getDeveloperCount(group);
+    		int countTabs = 1;
+    		if(spref.getString(new Keys().KEY_USER, "null").contains("master")){
+    			countTabs = databaseHandler.getDeveloperCount();
+            }else{
+            	if(spref.getString(new Keys().KEY_USER, "null").contains("developer")){
+            		countTabs = databaseHandler.getDeveloperCount(group);
+            	}
+            }
+    		
     		return countTabs;
         }  
   

@@ -106,11 +106,21 @@ public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdat
 		int groupid = spref.getInt(new Keys().KEY_GROUP, -1);
 		
 		if(groupid != -1){
-			try {
-				new AskUpdateFromServer(getApplicationContext(), this).execute(new Helper().createJSON(email, groupid));
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
+			if(spref.getString(new Keys().KEY_USER, "null").contains("master")){
+				try {
+					new AskUpdateFromServerMaster(getApplicationContext(), this).execute(new Helper().createJSON(email, groupid));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+            }else{
+            	if(spref.getString(new Keys().KEY_USER, "null").contains("developer")){
+            		try {
+        				new AskUpdateFromServer(getApplicationContext(), this).execute(new Helper().createJSON(email, groupid));
+        			} catch (JSONException e) {
+        				e.printStackTrace();
+        			}
+            	}
+            }
 		}
 	}
 	
@@ -265,7 +275,17 @@ public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdat
  		
         DatabaseHandler databaseHandler = new DatabaseHandler(getApplicationContext());
         DeveloperTab.developers.clear();
-        DeveloperTab.developers = databaseHandler.getAllDevelopers(group);
+        
+        if(spref.getString(new Keys().KEY_USER, "null").contains("master")){
+        	DeveloperTab.developers = databaseHandler.getAllDevelopers();
+        }else{
+        	if(spref.getString(new Keys().KEY_USER, "null").contains("developer")){
+        		DeveloperTab.developers = databaseHandler.getAllDevelopers(group);
+        		
+        		Log.w("updateList", "Size  = " + String.valueOf(DeveloperTab.developers.size()));
+        	}
+        }
+        
 	}
 	
 	@Override

@@ -3,6 +3,7 @@ package com.example.modisc;
 import java.util.Locale;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -17,7 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.view.*;
 
-public class StartWizard extends AppCompatActivity implements View.OnClickListener, OnTaskCompleted {
+public class StartWizard extends AppCompatActivity implements View.OnClickListener, OnTaskCompleted, OnReceiveIdentity {
 	
 	EditText et_email, et_group, et_name;
 	Button submit;
@@ -107,12 +108,11 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 					break;
 				}
 				
-				developer = new DeveloperObject(email, name, -1, "", "", "",1);
-				databaseHandler.addDeveloper(developer);
+				group = -1;
 				
-				// Send to server and update server database too
+				// Send to server and verify whether master or developer
 				try {
-					new SendDataToServer(getApplicationContext(), this).execute(new Helper().createJSON(developer));
+					new RequestIdentityFromServer(getApplicationContext(), this).execute(new Helper().createJSON(email));
 				} catch (JSONException e1) {
 					e1.printStackTrace();
 				}
@@ -134,21 +134,19 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 				String group_string = et_group.getText().toString();
 				
 				if(group_string.contentEquals("")){
-					break;
+					group = -1;
+				}else{
+					group = Integer.parseInt(group_string);
+					
 				}
 				
-				group = Integer.parseInt(group_string);
-				
-				SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-				
-				developer = new DeveloperObject(email, name, group, "", "", "",spref.getInt(new Keys().KEY_STATUS, 0));
-				
-				// Send to server and update server database too
+				// Send to server and verify whether master or developer
 				try {
-					new SendDataToServer(getApplicationContext(), this).execute(new Helper().createJSON(developer));
+					new RequestIdentityFromServer(getApplicationContext(), this).execute(new Helper().createJSON(email));
 				} catch (JSONException e1) {
 					e1.printStackTrace();
 				}
+				
 			}
 			
 			break;
@@ -216,11 +214,14 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 			}
 			
 			if(caller.contains("Splash")){
+				databaseHandler.addDeveloper(developer);
+				
 				SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 				Editor editor = spref.edit();
 				editor.putBoolean(new Keys().KEY_FIRST_FLAG, false);
 				editor.putString(new Keys().KEY_NAME, name);
 				editor.putString(new Keys().KEY_EMAIL, email);
+				editor.putInt(new Keys().KEY_GROUP, -1);
 				editor.commit();
 				
 				Class<?> ourClass = null;
@@ -233,6 +234,82 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 				startActivity(ourIntent);
 			}
 		}
+	}
+	
+	@Override
+	public void onReceiveIdentity(JSONObject json) {
+		try {
+			if(json.getString("user").contains("master")){
+				// Store in Shared Preferences
+				SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+				Editor editor = spref.edit();
+				editor.putString("user", "master");
+				editor.commit();
+				
+				developer = new DeveloperObject(email, name, group, "", "", "",spref.getInt(new Keys().KEY_STATUS,0));
+				
+				// Send to server and update server database too
+				try {
+					new SendDataToServerMaster(getApplicationContext(), this).execute(new Helper().createJSON(developer));
+				} catch (JSONException e1) {
+					e1.printStackTrace();
+				}
+			}else{
+				if(json.getString("user").contains("developer")){
+					// Store in Shared Preferences
+					SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+					Editor editor = spref.edit();
+					editor.putString(new Keys().KEY_USER, "developer");
+					editor.commit();
+
+					developer = new DeveloperObject(email, name, group, "", "", "",spref.getInt(new Keys().KEY_STATUS,0));
+					
+					// Send to server and update server database too
+					try {
+						new SendDataToServer(getApplicationContext(), this).execute(new Helper().createJSON(developer));
+					} catch (JSONException e1) {
+						e1.printStackTrace();
+					}
+
+				}else{
+					AlertDialog.Builder authDialog = new AlertDialog.Builder(this)
+			    			.setTitle("MoDiSc")
+				            .setMessage("Not An Authorized User."
+				            		+ "Contact Server Admin or Check Connection")
+			    			.setCancelable(false);
+			    	authAlert = authDialog.create();
+					if(!authAlert.isShowing()){
+						authAlert.show();
+					}
+					
+					//Dismiss the dialog after 2 seconds
+		    		new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							try {
+								Thread.sleep(2000);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+							runOnUiThread(new Runnable() {
+								
+								@Override
+								public void run() {
+									if(authAlert!=null && authAlert.isShowing()){
+										authAlert.dismiss();
+									}
+								}
+							});
+						}
+					}).start();
+				}
+			}
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	@Override

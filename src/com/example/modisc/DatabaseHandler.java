@@ -182,9 +182,57 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return developerList;
     }
     
+    // Getting All developers : JOSE
+    public List<DeveloperObject> getAllDevelopers() {
+        List<DeveloperObject> developerList = new ArrayList<DeveloperObject>();
+        // Select All Query
+        String selectQuery = "SELECT  * FROM " + TABLE_DEVELOPERS;
+ 
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery(selectQuery, null);
+        try{
+	        // looping through all rows and adding to list
+	        if (cursor.moveToFirst()) {
+	            do {
+	            	DeveloperObject developer = new DeveloperObject(cursor.getString(0),cursor.getString(1),
+	            			cursor.getInt(2),cursor.getString(3),cursor.getString(4),cursor.getString(5),cursor.getInt(6));
+	                
+	                // Adding developer to list
+	            	developerList.add(developer);
+	            } while (cursor.moveToNext());
+	        }
+        }finally{
+    		//Close connection
+    		cursor.close();
+            db.close();
+        }
+        
+        // return developer list
+        return developerList;
+    }
+    
     // Getting developer Count
     public int getDeveloperCount(int group) {
         String countQuery = "SELECT * FROM " + TABLE_DEVELOPERS + " WHERE " + KEY_GROUP + "=" + String.valueOf(group);
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(countQuery, null);
+        int count = 0;
+        
+        try{
+        	count = cursor.getCount();
+	    }finally{
+	    	//Close connection
+    		cursor.close();
+    		db.close();
+	    }
+        
+        // return count
+        return count;
+    }
+    
+    // Getting developer Count : JOSE
+    public int getDeveloperCount() {
+        String countQuery = "SELECT * FROM " + TABLE_DEVELOPERS;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(countQuery, null);
         int count = 0;
