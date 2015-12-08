@@ -49,6 +49,15 @@ public class Helper {
 		return json;
 	}
 	
+	protected JSONObject createJSON(String email, String name, int groupid, int status) throws JSONException{
+		JSONObject json = new JSONObject();
+		json.put("email", email);
+		json.put("name", name);
+		json.put("groupid", groupid);
+		json.put("status", status);
+		return json;
+	}
+	
 	protected JSONObject createJSON(String email) throws JSONException{
 		JSONObject json = new JSONObject();
 		json.put("email", email);

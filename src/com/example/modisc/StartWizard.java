@@ -266,15 +266,11 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 					editor.putString(new Keys().KEY_USER, "developer");
 					editor.commit();
 
-					String temp_goal = spref.getString(new Keys().KEY_GOAL, "");
-					String temp_todaysGoal = spref.getString(new Keys().KEY_TGOAL, "");
-					String temp_obstacle = spref.getString(new Keys().KEY_OBSTACLE, "");
-					
-					developer = new DeveloperObject(email, name, group, temp_goal, temp_todaysGoal, temp_obstacle,spref.getInt(new Keys().KEY_STATUS,0));
+					developer = new DeveloperObject(email, name, group, "", "", "",spref.getInt(new Keys().KEY_STATUS,0));
 					
 					// Send to server and update server database too
 					try {
-						new SendDataToServer(getApplicationContext(), this).execute(new Helper().createJSON(developer));
+						new SendDataToServer(getApplicationContext(), this).execute(new Helper().createJSON(email,name,group,spref.getInt(new Keys().KEY_STATUS,0)));
 					} catch (JSONException e1) {
 						e1.printStackTrace();
 					}
