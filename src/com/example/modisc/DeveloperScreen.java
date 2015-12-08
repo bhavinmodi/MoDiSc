@@ -186,8 +186,15 @@ public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdat
 		mTabHost  = (FragmentTabHost) findViewById(android.R.id.tabhost);
 		mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
 		
+		mTabHost.clearAllTabs();
+		
 		mTabHost.addTab(mTabHost.newTabSpec("tab1")
 				.setIndicator("Group = " + String.valueOf(group) + ", Name = " + name, null), DeveloperTab.class, null);
+		
+		if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(new Keys().KEY_USER, "").contains("master")){
+			mTabHost.addTab(mTabHost.newTabSpec("tab2")
+					.setIndicator("Sprint Planner", null), TaskList.class, null);
+		}
 		
 		mTabHost.setOnTabChangedListener(new OnTabChangeListener() {
 
@@ -196,11 +203,31 @@ public class DeveloperScreen extends AppCompatActivity implements OnReceiveUpdat
 
 				fragmentManager = getSupportFragmentManager();
 				DeveloperTab homeScreen = (DeveloperTab) fragmentManager.findFragmentByTag("tab1");
+				TaskList taskList = (TaskList) fragmentManager.findFragmentByTag("tab2");
 				android.support.v4.app.FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
 				if(tabId.equalsIgnoreCase("tab1")){
 					if(homeScreen != null){
+						
+						if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(new Keys().KEY_USER, "").contains("master")){
+							if(taskList != null){
+								fragmentTransaction.hide(taskList);
+							}
+						}
+						
 						fragmentTransaction.show(homeScreen);
+					}
+				}else{
+					if(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(new Keys().KEY_USER, "").contains("master")){
+						if(tabId.equalsIgnoreCase("tab2")){
+							if(taskList != null){
+								if(homeScreen != null){
+									fragmentTransaction.hide(homeScreen);
+								}
+								
+								fragmentTransaction.show(taskList);
+							}
+						}
 					}
 				}
 				

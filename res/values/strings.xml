@@ -22,4 +22,56 @@
 	<string name="menu_offline">Offline</string>
 	<string name="menu_busy">Busy</string>
 	
+	<string name="login">Login ID</string>
+    <string name="password">Password</string>
+    <string name="loginText">Enter Login ID</string>
+    <string name="passwordText">Enter Password</string>
+    <string name="loginButton">Login</string>
+    <string name="title_activity_home_screen">HomeScreen</string>
+    <string name="title_section1">Tasks</string>
+    <string name="title_section2">Bugs</string>
+    <string name="title_section3">Developers</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="title_activity_task_list">TaskList</string>
+    <string name="idText">ID: </string>
+    <string name="nameText">Name: </string>
+    <string name="descText">Description: </string>
+    <string name="priorityText">Priority: </string>
+    <string name="statusText">Status: </string>
+    <string name="ownerText">Owner: </string>
+    <string name="typeText">Type: </string>
+    <string name="priority">Priority: </string>
+    <string name="deleteData">Delete data</string>
+    <string name="loadData">Add data</string>
+    <string name="buttonSave">Save</string>
+    <string name="buttonCancel">Cancel</string>
+
+    <string-array name="types">
+        <item>Task</item>
+        <item>Bug</item>
+    </string-array>
+    <string-array name="priorities">
+        <item>Low</item>
+        <item>High</item>
+    </string-array>
+    <string-array name="owners">
+        <item>Vivek</item>
+        <item>Bhavin</item>
+        <item>Jose</item>
+        <item>Jesse</item>
+        <item>Sam</item>
+        <item>Steve</item>
+    </string-array>
+    <string-array name="status">
+        <item>Created</item>
+        <item>Assigned</item>
+        <item>In Progress</item>
+        <item>Modified</item>
+        <item>In Test</item>
+        <item>Re-assigned</item>
+        <item>Resolved</item>
+    </string-array>
+	
 </resources>

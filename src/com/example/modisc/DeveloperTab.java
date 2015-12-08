@@ -336,6 +336,14 @@ public class DeveloperTab extends Fragment implements View.OnClickListener, OnTa
 	@Override
 	public void onTaskCompleted(int result) {
 		switch(result){
+		case 1:
+			SharedPreferences spref = PreferenceManager.getDefaultSharedPreferences(getContext());
+			Editor editor = spref.edit();
+			editor.putString(new Keys().KEY_GOAL, personal_goals.getText().toString());
+			editor.putString(new Keys().KEY_TGOAL, personal_todaysGoals.getText().toString());
+			editor.putString(new Keys().KEY_OBSTACLE, personal_obstacle.getText().toString());
+			editor.commit();
+			break;
 		case -1:
 			AlertDialog.Builder authDialog = new AlertDialog.Builder(getContext())
 			.setTitle("MoDiSc")

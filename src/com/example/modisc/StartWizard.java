@@ -246,7 +246,11 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 				editor.putString("user", "master");
 				editor.commit();
 				
-				developer = new DeveloperObject(email, name, group, "", "", "",spref.getInt(new Keys().KEY_STATUS,0));
+				String temp_goal = spref.getString(new Keys().KEY_GOAL, "");
+				String temp_todaysGoal = spref.getString(new Keys().KEY_TGOAL, "");
+				String temp_obstacle = spref.getString(new Keys().KEY_OBSTACLE, "");
+				
+				developer = new DeveloperObject(email, name, group, temp_goal, temp_todaysGoal, temp_obstacle,spref.getInt(new Keys().KEY_STATUS,0));
 				
 				// Send to server and update server database too
 				try {
@@ -262,7 +266,11 @@ public class StartWizard extends AppCompatActivity implements View.OnClickListen
 					editor.putString(new Keys().KEY_USER, "developer");
 					editor.commit();
 
-					developer = new DeveloperObject(email, name, group, "", "", "",spref.getInt(new Keys().KEY_STATUS,0));
+					String temp_goal = spref.getString(new Keys().KEY_GOAL, "");
+					String temp_todaysGoal = spref.getString(new Keys().KEY_TGOAL, "");
+					String temp_obstacle = spref.getString(new Keys().KEY_OBSTACLE, "");
+					
+					developer = new DeveloperObject(email, name, group, temp_goal, temp_todaysGoal, temp_obstacle,spref.getInt(new Keys().KEY_STATUS,0));
 					
 					// Send to server and update server database too
 					try {

@@ -25,7 +25,7 @@ public class Helper {
 		json.put("groupid", groupid);
 		json.put("goals", goals);
 		json.put("todaysgoals", todaysgoals);
-		json.put("obstacle", obstacle);
+		json.put("obstacles", obstacle);
 		json.put("status", status);
 		return json;
 	}
@@ -35,9 +35,9 @@ public class Helper {
 		json.put("email", developer.getEmail());
 		json.put("name", developer.getName());
 		json.put("groupid", developer.getGroup());
-		json.put("goals", developer.getGroup());
+		json.put("goals", developer.getGoal());
 		json.put("todaysgoals", developer.getTodaysGoal());
-		json.put("obstacle", developer.getObstacle());
+		json.put("obstacles", developer.getObstacle());
 		json.put("status", developer.getStatus());
 		return json;
 	}
